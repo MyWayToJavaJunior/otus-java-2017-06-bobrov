@@ -10,9 +10,6 @@
         <developer>
             <name>tully</name>
         </developer>
-        <developer>
-            <name>lwerl</name>
-        </developer>
     </developers>
 
     <groupId>ru.otus</groupId>
@@ -31,16 +28,18 @@
             <groupId>net.sf.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>${net.sf.opencsv.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>RELEASE</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>${name}</finalName>
+        <finalName>${project.name}</finalName>
         <plugins>
             <!-- Заменил assembly на shade -->
             <plugin>
@@ -80,14 +79,21 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <!-- Версия Proguard -->
                     <proguardVersion>5.3.3</proguardVersion>
+                    <!-- Не совсем понимаю зачем нужен флаг и без него работает -->
                     <obfuscate>true</obfuscate>
-                    <options>
-                        <option>-allowaccessmodification</option>
-                        <option>-keep public class ru.otus.lottery.Main {
-                            public static void main(java.lang.String[]);
-                            }</option>
-                    </options>
+                    <!-- На случай нехватки памяти в процессе обфускации -->
+                    <maxMemory>64m</maxMemory>
+                    <!-- Внешний файл конфигурации -->
+                    <proguardInclude>${basedir}/proguard.conf</proguardInclude>
+                    <exclusions>
+                        <!-- Убираем из обработки так как они уже включены shade -->
+                        <exclusion>
+                            <groupId>net.sf.opencsv</groupId>
+                            <artifactId>opencsv</artifactId>
+                        </exclusion>
+                    </exclusions>
                     <libs>
                         <lib>${java.home}/lib/rt.jar</lib>
                     </libs>
