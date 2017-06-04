@@ -10,9 +10,6 @@
         <developer>
             <name>tully</name>
         </developer>
-        <developer>
-            <name>lwerl</name>
-        </developer>
     </developers>
 
     <groupId>ru.otus</groupId>
@@ -31,16 +28,18 @@
             <groupId>net.sf.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>${net.sf.opencsv.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>RELEASE</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>${name}</finalName>
+        <finalName>${project.name}</finalName>
         <plugins>
             <!-- Заменил assembly на shade -->
             <plugin>
