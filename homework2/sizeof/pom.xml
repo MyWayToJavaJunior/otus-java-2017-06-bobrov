@@ -24,7 +24,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Premain-Class>Size</Premain-Class>
+                            <Premain-Class>org.lwerl.sizeof.Size</Premain-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>

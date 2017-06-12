@@ -1,14 +1,17 @@
+package org.lwerl.objectsize.factory;
+
 import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
+import org.lwerl.sizeof.Size;
 import org.openjdk.jol.info.ClassLayout;
 import org.openjdk.jol.vm.VM;
 
 /**
  * Created by lWeRl on 11.06.2017.
- * First install sizeof project
- * Start JVM with -javaagent:sizeof/target/sizeof.jar option
  */
-public class ObjectSize {
-    final private static int count = 100_000;
+public abstract class InstanceSize {
+    final int count = 100_000;
+    long memoryDiff;
+    Object instance;
 
     static {
         System.out.println(VM.current().details());
@@ -45,30 +48,15 @@ public class ObjectSize {
         return init;
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        new ObjectSize().run();
-    }
+    abstract void run();
 
-    void run() throws InterruptedException {
-        getFreeMemory();
-        Object[] s = new Object[count];
-        long init = getFreeMemory();
-        for (int j = 0; j < count; ++j) {
-//            s[j] = new ArrayList<>();
-//            s[j] = new String(new char[]{});
-//            s[j] = new Object();
-//            s[j] = new Object[1];
-            s[j] = new MyClass();
-//            s[j] = new byte[1024 - 16];
-//            s[j] = new Integer(200);
-        }
-        long afters = getFreeMemory();
-
-        System.out.println("With memory difference method - " + s[0].getClass().getCanonicalName() + ":\t" + memoryFormat((init - afters) / count));
-        System.out.println("With ObjectSizeCalculator - " + s[0].getClass().getCanonicalName() + ":\t" + memoryFormat(ObjectSizeCalculator.getObjectSize(s[0])));
-        System.out.println("With instrumentation - " + s[0].getClass().getCanonicalName() + ":\t" + memoryFormat(Size.of(s[0])));
+    public void printInfo(){
+        run();
+        System.out.println("#####################################################################################################################################\n");
+        System.out.println("With memory difference method - " + instance.getClass().getCanonicalName() + ":\t" + memoryFormat((memoryDiff) / count));
+        System.out.println("With ObjectSizeCalculator - " + instance.getClass().getCanonicalName() + ":\t" + memoryFormat(ObjectSizeCalculator.getObjectSize(instance)));
+        System.out.println("With instrumentation - " + instance.getClass().getCanonicalName() + ":\t" + memoryFormat(Size.of(instance)));
         System.out.println();
-        System.out.println(ClassLayout.parseInstance(s[0]).toPrintable());
+        System.out.println(ClassLayout.parseInstance(instance).toPrintable());
     }
-
 }
