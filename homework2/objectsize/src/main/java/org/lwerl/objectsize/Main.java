@@ -1,9 +1,5 @@
 package org.lwerl.objectsize;
 
-import org.lwerl.objectsize.factory.InstanceSizeFactory;
-
-import java.util.function.Supplier;
-
 /**
  * Created by lWeRl on 12.06.2017.
  * First install sizeof project
@@ -11,13 +7,18 @@ import java.util.function.Supplier;
  */
 public class Main {
     public static void main(String[] args) {
-        Supplier<InstanceSizeFactory> instanceSizeFactory = InstanceSizeFactory::new;
-        instanceSizeFactory.get().getInstanceSize("OBJECT").printInfo();
-//        instanceSizeFactory.get().getInstanceSize("STRING_EMPTY").printInfo();
-//        instanceSizeFactory.get().getInstanceSize("STRING_5_LETTERS").printInfo();
-//        instanceSizeFactory.get().getInstanceSize("ARRAYLIST").printInfo();
-//        instanceSizeFactory.get().getInstanceSize("ARRAY").printInfo();
-//        instanceSizeFactory.get().getInstanceSize("ARRAY_ZERO_LENGTH").printInfo();
-//        instanceSizeFactory.get().getInstanceSize("MYCLASS").printInfo();
+//        new InstanceSize(Object::new).printInfo();
+//        new InstanceSize(() -> new String(new char[0])).printInfo();
+//        new InstanceSize(() -> new String(new char[]{'t', 'e', 's', 't', '!'})).printInfo();
+//        new InstanceSize(() -> new int[0]).printInfo();
+//        new InstanceSize(() -> new int[100]).printInfo();
+//        new InstanceSize(() -> new int[1000]).printInfo();
+        new InstanceSize(MyClass::new).printInfo();
+    }
+
+    private static class MyClass {
+        int a;
+        boolean b;
+        String s;
     }
 }
