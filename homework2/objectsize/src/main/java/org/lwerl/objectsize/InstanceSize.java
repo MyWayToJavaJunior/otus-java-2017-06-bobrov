@@ -67,14 +67,15 @@ public class InstanceSize {
 
     void printInfo(){
         run();
+        String className = supplier.get().getClass().getCanonicalName();
         System.out.println("###################################################################" +
                 "##################################################################\n");
-        System.out.println("With memory difference method - "
-                + supplier.get().getClass().getCanonicalName() + ":\t" + memoryFormat((memoryDiff) / count));
-        System.out.println("With ObjectSizeCalculator - "
-                + supplier.get().getClass().getCanonicalName() + ":\t" + memoryFormat(ObjectSizeCalculator.getObjectSize(supplier.get())));
-        System.out.println("With instrumentation - "
-                + supplier.get().getClass().getCanonicalName() + ":\t" + memoryFormat(Size.of(supplier.get())));
+        System.out.println("With memory difference method - " + className + ":\t"
+                + memoryFormat((memoryDiff) / count));
+        System.out.println("With ObjectSizeCalculator - " + className + ":\t"
+                + memoryFormat(ObjectSizeCalculator.getObjectSize(supplier.get())));
+        System.out.println("With instrumentation - " + className + ":\t"
+                + memoryFormat(Size.of(supplier.get())));
         System.out.println();
         System.out.println(ClassLayout.parseInstance(supplier.get()).toPrintable());
     }
