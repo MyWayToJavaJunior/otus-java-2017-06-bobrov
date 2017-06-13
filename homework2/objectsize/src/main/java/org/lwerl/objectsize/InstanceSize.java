@@ -58,7 +58,6 @@ public class InstanceSize {
             s[j] = supplier.get();
         }
         memoryDiff = init - getFreeMemory();
-
     }
 
     InstanceSize(Supplier supplier) {
