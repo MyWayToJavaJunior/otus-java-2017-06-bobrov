@@ -1,4 +1,4 @@
-package org.lwerl.myarraylist;
+package com.lwerl.myarraylist;
 
 import org.junit.Before;
 import org.junit.Test;
