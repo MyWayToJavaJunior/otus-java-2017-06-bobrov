@@ -114,7 +114,7 @@ public class MyArrayList<E> implements List<E> {
     }
 
     public boolean containsAll(Collection<?> c) {
-        return false;
+        throw new RuntimeException();
     }
 
     public boolean addAll(Collection<? extends E> c) {
@@ -209,7 +209,7 @@ public class MyArrayList<E> implements List<E> {
     }
 
     public int lastIndexOf(Object o) {
-        return 0;
+        throw new RuntimeException();
     }
 
     public ListIterator<E> listIterator() {
