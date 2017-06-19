@@ -1,7 +1,10 @@
+package org.lwerl.myarraylist;
+
 import java.util.*;
 
 /**
  * Created by lWeRl on 17.06.2017.
+ * Homework 3
  */
 public class MyArrayList<E> implements List<E> {
 
@@ -141,11 +144,26 @@ public class MyArrayList<E> implements List<E> {
     }
 
     public boolean equals(Object o) {
-        return false;
+        if (o == this)
+            return true;
+        if (!(o instanceof List))
+            return false;
+        ListIterator<E> e1 = listIterator();
+        ListIterator<?> e2 = ((List<?>) o).listIterator();
+        while (e1.hasNext() && e2.hasNext()) {
+            E o1 = e1.next();
+            Object o2 = e2.next();
+            if (!(o1==null ? o2==null : o1.equals(o2)))
+                return false;
+        }
+        return !(e1.hasNext() || e2.hasNext());
     }
 
     public int hashCode() {
-        return 0;
+        int hashCode = 1;
+        for (E e : this)
+            hashCode = 31 * hashCode + (e==null ? 0 : e.hashCode());
+        return hashCode;
     }
 
     @SuppressWarnings("unchecked")

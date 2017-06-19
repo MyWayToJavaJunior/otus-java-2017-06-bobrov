@@ -32,7 +32,7 @@
     </dependencies>
 
     <build>
-        <finalName>${pom.artifactId}</finalName>
+        <finalName>${project.artifactId}</finalName>
     </build>
 
 </project>
