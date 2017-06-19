@@ -9,7 +9,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Created by bobrov on 19.06.17.
+ * Created by lWeRl on 19.06.17.
  * Some test
  */
 public class MyArrayListTest {
