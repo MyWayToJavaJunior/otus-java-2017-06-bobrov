@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.lwerl</groupId>
-    <artifactId>homerwok4</artifactId>
+    <artifactId>gctets</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <description>OTUS Java: Домашнее задание 4. GC, JMX, VM option, memory leak</description>
@@ -24,7 +24,22 @@
     </properties>
 
     <build>
-        <finalName>${pom.artifactId}</finalName>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.lwerl.gctest.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
 </project>

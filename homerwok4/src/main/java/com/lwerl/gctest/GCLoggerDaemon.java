@@ -1,4 +1,8 @@
+package com.lwerl.gctest;
+
+import javax.management.*;
 import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
 import java.util.List;
 
 /**
@@ -10,9 +14,11 @@ public class GCLoggerDaemon extends Thread {
     private final String[] gcNames;
     private final long gcCounts[];
     private final long gcDurations[];
+    private final ObjectName mName;
 
 
-    public GCLoggerDaemon(List<GarbageCollectorMXBean> gcMXBeans) {
+    public GCLoggerDaemon(List<GarbageCollectorMXBean> gcMXBeans, ObjectName mName) {
+        this.mName = mName;
         this.gcMXBeans = gcMXBeans;
         this.gcCounts = new long[gcMXBeans.size()];
         this.gcDurations = new long[gcMXBeans.size()];
@@ -28,8 +34,10 @@ public class GCLoggerDaemon extends Thread {
     @Override
     public void run() {
         try {
+            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             while (true) {
                 Thread.sleep(1000 * 60);
+                Long iteration = (Long) mbs.getAttribute(mName, "IterationCount");
                 for (int i = 0; i < gcMXBeans.size(); i++) {
                     System.out.println(gcNames[i] + ":" +
                             " count=" + (gcMXBeans.get(i).getCollectionCount() - gcCounts[i]) +
@@ -39,8 +47,9 @@ public class GCLoggerDaemon extends Thread {
                     gcDurations[i] = gcMXBeans.get(i).getCollectionTime();
 
                 }
+                System.out.println("iteration=" + iteration);
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | AttributeNotFoundException | InstanceNotFoundException | ReflectionException | MBeanException e) {
             e.printStackTrace();
         }
     }

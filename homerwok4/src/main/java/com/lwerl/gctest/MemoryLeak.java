@@ -1,3 +1,5 @@
+package com.lwerl.gctest;
+
 import java.util.ArrayList;
 
 /**
@@ -73,29 +75,34 @@ public class MemoryLeak implements MemoryLeakMBean {
         while (true) {
 
             try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+                Thread.sleep(40);
 
-            // pollute young gen
-            int offsetIndex = arrayLength / 2;
-            Object[] newArray = new Object[arrayLength + GROW_SIZE * growSizeMultiplier];
-            System.arraycopy(arrayForLeak, 0, newArray, 0, offsetIndex);
-            arrayForLeak = newArray;
-            arrayLength = arrayForLeak.length;
-            for (int i = offsetIndex; i < arrayLength; i++) {
-                arrayForLeak[i] = new Object();
-            }
-
-            // pollute old gen
-            if (oldGenPollution && (iterationCount % oldGenPollutionDivider == 0)) {
-                for (int i = 0; i < arrayLength; i++) {
+                // pollute young gen
+                int offsetIndex = arrayLength / 2;
+                Object[] newArray = new Object[arrayLength + GROW_SIZE * growSizeMultiplier];
+                System.arraycopy(arrayForLeak, 0, newArray, 0, offsetIndex);
+                arrayForLeak = newArray;
+                arrayLength = arrayForLeak.length;
+                for (int i = offsetIndex; i < arrayLength; i++) {
                     arrayForLeak[i] = new Object();
                 }
-            }
 
-            iterationCount++;
+                // pollute old gen
+                if (oldGenPollution && (iterationCount % oldGenPollutionDivider == 0)) {
+                    for (int i = 0; i < arrayLength; i++) {
+                        arrayForLeak[i] = new Object();
+                    }
+                }
+
+                iterationCount++;
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (OutOfMemoryError e) {
+                System.out.println(iterationCount);
+                e.printStackTrace();
+                System.exit(-1);
+            }
         }
     }
 }
