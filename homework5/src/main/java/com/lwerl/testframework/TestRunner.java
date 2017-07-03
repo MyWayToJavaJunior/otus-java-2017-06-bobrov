@@ -3,7 +3,8 @@ package com.lwerl.testframework;
 import com.lwerl.testframework.annotation.After;
 import com.lwerl.testframework.annotation.Before;
 import com.lwerl.testframework.annotation.Test;
-import com.lwerl.testframework.util.*;
+import com.lwerl.testframework.util.ResultPrinter;
+import com.lwerl.testframework.util.Timer;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -15,11 +16,10 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
-import com.lwerl.testframework.util.Timer;
-
 import static com.lwerl.testframework.constant.Causes.*;
 import static com.lwerl.testframework.constant.Literals.*;
-import static com.lwerl.testframework.constant.Messages.*;
+import static com.lwerl.testframework.constant.Messages.CLASS_NOT_LOAD_ERROR;
+import static com.lwerl.testframework.constant.Messages.WRONG_PACKAGE_NAME_ERROR;
 
 
 public class TestRunner {
