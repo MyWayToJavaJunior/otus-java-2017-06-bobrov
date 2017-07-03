@@ -1,6 +1,6 @@
-package com.lwerl.examples.done;
+package com.lwerl.testframework.examples.done;
 
-import com.lwerl.testframework.Test;
+import com.lwerl.testframework.annotation.Test;
 import org.junit.Assert;
 
 public class DoneTest {
@@ -20,6 +20,6 @@ public class DoneTest {
     }
 
     @Test
-    public void test4(int a) {
+    public void test4() {
     }
 }

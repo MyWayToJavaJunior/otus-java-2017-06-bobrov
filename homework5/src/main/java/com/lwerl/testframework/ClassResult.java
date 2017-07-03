@@ -4,8 +4,9 @@ import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import static com.lwerl.testframework.constant.Literals.*;
+
 public class ClassResult {
-    private static final String EMPTY_STRING = "";
 
     private Class<?> testClass;
     private Set<MethodResult> methodResultSet;

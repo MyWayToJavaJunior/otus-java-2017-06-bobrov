@@ -1,6 +1,6 @@
-package com.lwerl.examples.fail;
+package com.lwerl.testframework.examples.fail;
 
-import com.lwerl.testframework.Test;
+import com.lwerl.testframework.annotation.Test;
 import org.junit.Assert;
 
 public class FailTest {

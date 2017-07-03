@@ -1,5 +1,10 @@
 package com.lwerl.testframework;
 
+import com.lwerl.testframework.annotation.After;
+import com.lwerl.testframework.annotation.Before;
+import com.lwerl.testframework.annotation.Test;
+import com.lwerl.testframework.util.*;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,28 +15,11 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
+import static com.lwerl.testframework.constant.Causes.*;
+import static com.lwerl.testframework.constant.Literals.*;
+import static com.lwerl.testframework.constant.Messages.*;
+
 public class TestRunner {
-
-    private final static String JAR_FILE_EXTENSION = ".jar";
-    private final static String CLASS_FILE_EXTENSION = ".class";
-    private final static String PACKAGE_SEPARATOR = ".";
-    private final static String PACKAGE_SEPARATOR_REGEXP = "\\.";
-    private final static String EMPTY_STRING = "";
-    private final static String CLASS_TEST_NAMES_SEPARATOR = ":";
-
-    private final static String CLASS_NOT_LOAD_ERROR_MSG = "Класс %s не удалось загрузить.\n";
-
-    private final static String CLASS_MISSED = "Тестовый класс %s пропущен: %s\n";
-    private final static String DEFAULT_CONSTRUCTOR_MISSED = "не имеет конструктора по умолчанию.";
-    private final static String BEFORE_AFTER_METHODS_SIGNATURE = "методы помеченные аннотациями @Before/@After не должны содержать параметров в своей сигнатуре.";
-
-    private final static String TEST_PREFIX = "Тест";
-    private final static String TEST_DONE = TEST_PREFIX + " %s пройден.\n";
-    private final static String TEST_FAILED = TEST_PREFIX + " %s провален.\n";
-    private final static String TEST_FAILED_WITH_CAUSE = TEST_PREFIX + " %s провален: %s.\n";
-    private final static String TEST_MISSED = TEST_PREFIX + " %s пропущен: тестовый метод не должен содержать параметров в своей сигнатуре.\n";
-    private final static String EXPECTED_EXCEPTION = "ожидаемое исключение ";
-
 
     private Set<Class<?>> classes;
     private Set<ClassResult> testResults = new LinkedHashSet<>();
@@ -46,8 +34,8 @@ public class TestRunner {
     public TestRunner(String packageName) {
         try {
             setClasses(packageName);
-        } catch (IOException | URISyntaxException | ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException | URISyntaxException e) {
+            System.out.printf(WRONG_PACKAGE_NAME_ERROR, e.getMessage());
         }
     }
 
@@ -58,6 +46,10 @@ public class TestRunner {
     public void run() {
         preprocessor();
         test();
+    }
+
+    public void print() {
+        ResultPrinter.print(testResults, false);
     }
 
     private void test() {
@@ -77,19 +69,16 @@ public class TestRunner {
                     }
 
                     Class exceptionClass = test.getAnnotation(Test.class).exception();
-                    String testName = clazz.getName() + CLASS_TEST_NAMES_SEPARATOR + test.getName();
 
                     try {
 
-                        Timer.start();
+                        com.lwerl.testframework.util.Timer.start();
                         test.invoke(instance);
 
                         if (exceptionClass.equals(Test.Empty.class)) {
-                            System.out.printf(TEST_DONE, testName);
-                            methodResult = classResult.new MethodResult(test, true, Timer.stop(), EMPTY_STRING, null);
+                            methodResult = classResult.new MethodResult(test, true, com.lwerl.testframework.util.Timer.stop(), EMPTY_STRING, null);
                         } else {
-                            printFailMessage(testName, EXPECTED_EXCEPTION + exceptionClass.getName());
-                            methodResult = classResult.new MethodResult(test, false, Timer.stop(), EXPECTED_EXCEPTION, null);
+                            methodResult = classResult.new MethodResult(test, false, com.lwerl.testframework.util.Timer.stop(), String.format(EXPECTED_EXCEPTION, exceptionClass.getName()), null);
                         }
 
                     } catch (InvocationTargetException e) {
@@ -97,20 +86,15 @@ public class TestRunner {
                         Throwable t = e.getCause();
 
                         if (exceptionClass.isInstance(t)) {
-                            System.out.printf(TEST_DONE, testName);
-                            methodResult = classResult.new MethodResult(test, true, Timer.stop(), EMPTY_STRING, null);
+                            methodResult = classResult.new MethodResult(test, true, com.lwerl.testframework.util.Timer.stop(), EMPTY_STRING, null);
                         } else if (t instanceof AssertionError) {
-                            printFailMessage(testName, t.getMessage());
-                            methodResult = classResult.new MethodResult(test, false, Timer.stop(), t.getMessage(), t);
+                            methodResult = classResult.new MethodResult(test, false, com.lwerl.testframework.util.Timer.stop(), t.getMessage(), t);
                         } else {
-                            printFailMessage(testName, t.getClass().getName());
-                            methodResult = classResult.new MethodResult(test, false, Timer.stop(), t.getClass().getName(), t);
-                            t.printStackTrace(System.out);
+                            methodResult = classResult.new MethodResult(test, false, com.lwerl.testframework.util.Timer.stop(), t.getClass().getName(), t);
                         }
 
                     } catch (IllegalArgumentException e) {
-                        System.out.printf(TEST_MISSED, testName);
-                        methodResult = classResult.new MethodResult(test, false, Timer.stop(), TEST_MISSED, e);
+                        methodResult = classResult.new MethodResult(test, false, com.lwerl.testframework.util.Timer.stop(), TEST_METHOD_SIGNATURE, e);
                     }
 
                     // Выполняем все методы аннотированные @After
@@ -122,18 +106,13 @@ public class TestRunner {
                 }
 
             } catch (InstantiationException e) {
-                System.out.printf(CLASS_MISSED, clazz.getName(), DEFAULT_CONSTRUCTOR_MISSED);
                 classResult.fail(DEFAULT_CONSTRUCTOR_MISSED, e);
             } catch (IllegalArgumentException e) {
-                System.out.printf(CLASS_MISSED, clazz.getName(), BEFORE_AFTER_METHODS_SIGNATURE);
                 classResult.fail(BEFORE_AFTER_METHODS_SIGNATURE, e);
             } catch (InvocationTargetException e) {
-                System.out.printf(CLASS_MISSED, clazz.getName(), e.getCause());
-                e.getCause().printStackTrace(System.out);
                 classResult.fail(e.getCause().getClass().getName(), e.getCause());
             } catch (IllegalAccessException e) {
                 classResult.fail(e.getClass().getName(), e);
-                e.printStackTrace();
             }
 
             testResults.add(classResult);
@@ -141,6 +120,7 @@ public class TestRunner {
     }
 
     private void preprocessor() {
+        Set<Class<?>> excluded = new LinkedHashSet<>();
         for (Class<?> clazz : classes) {
             LinkedHashSet<Method> before = new LinkedHashSet<>();
             LinkedHashSet<Method> test = new LinkedHashSet<>();
@@ -157,24 +137,19 @@ public class TestRunner {
                     after.add(m);
                 }
             }
-
-            beforeMap.put(clazz, before);
-            testMap.put(clazz, test);
-            afterMap.put(clazz, after);
+            if (test.isEmpty()) {
+                excluded.add(clazz);
+            } else {
+                beforeMap.put(clazz, before);
+                testMap.put(clazz, test);
+                afterMap.put(clazz, after);
+            }
         }
-
+        classes.removeAll(excluded);
         testResults.clear();
     }
 
-    private void printFailMessage(String testName, String cause) {
-        if (cause == null) {
-            System.out.printf(TEST_FAILED, testName);
-        } else {
-            System.out.printf(TEST_FAILED_WITH_CAUSE, testName, cause);
-        }
-    }
-
-    private void setClasses(String packageName) throws ClassNotFoundException, IOException, URISyntaxException {
+    private void setClasses(String packageName) throws URISyntaxException, IOException {
 
         Set<Path> classpaths = new LinkedHashSet<>();
         String[] packages = packageName.split(PACKAGE_SEPARATOR_REGEXP);
@@ -213,7 +188,7 @@ public class TestRunner {
                     try {
                         classes.add(Class.forName(className.replace(CLASS_FILE_EXTENSION, EMPTY_STRING)));
                     } catch (ClassNotFoundException e) {
-                        System.err.printf(CLASS_NOT_LOAD_ERROR_MSG, className.replace(CLASS_FILE_EXTENSION, EMPTY_STRING));
+                        System.out.printf(CLASS_NOT_LOAD_ERROR, className.replace(CLASS_FILE_EXTENSION, EMPTY_STRING));
                     }
                 }
             }

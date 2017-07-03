@@ -1,4 +1,4 @@
-package com.lwerl.testframework;
+package com.lwerl.testframework.util;
 
 public class Timer {
     private static long startTime = -1;
