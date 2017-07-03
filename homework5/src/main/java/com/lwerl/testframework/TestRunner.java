@@ -34,34 +34,41 @@ public class TestRunner {
 
 
     private Set<Class<?>> classes;
+    private Set<ClassResult> testResults = new LinkedHashSet<>();
     private Map<Class<?>, Set<Method>> beforeMap = new HashMap<>();
     private Map<Class<?>, Set<Method>> testMap = new HashMap<>();
     private Map<Class<?>, Set<Method>> afterMap = new HashMap<>();
 
     public TestRunner(Class<?>... classes) {
         this.classes = new LinkedHashSet<>(Arrays.asList(classes));
-        test();
     }
 
     public TestRunner(String packageName) {
         try {
             setClasses(packageName);
-            test();
         } catch (IOException | URISyntaxException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    private void test() {
-        preprocessor();
-        run();
+    public Set<ClassResult> getTestResults() {
+        return testResults;
     }
 
-    private void run() {
+    public void run() {
+        preprocessor();
+        test();
+    }
+
+    private void test() {
         for (Class<?> clazz : classes) {
+
+            ClassResult classResult = new ClassResult(clazz);
+
             try {
 
                 for (Method test : testMap.get(clazz)) {
+                    ClassResult.MethodResult methodResult;
 
                     Object instance = clazz.newInstance();
 
@@ -74,12 +81,15 @@ public class TestRunner {
 
                     try {
 
+                        Timer.start();
                         test.invoke(instance);
 
                         if (exceptionClass.equals(Test.Empty.class)) {
                             System.out.printf(TEST_DONE, testName);
+                            methodResult = classResult.new MethodResult(test, true, Timer.stop(), EMPTY_STRING, null);
                         } else {
                             printFailMessage(testName, EXPECTED_EXCEPTION + exceptionClass.getName());
+                            methodResult = classResult.new MethodResult(test, false, Timer.stop(), EXPECTED_EXCEPTION, null);
                         }
 
                     } catch (InvocationTargetException e) {
@@ -88,33 +98,45 @@ public class TestRunner {
 
                         if (exceptionClass.isInstance(t)) {
                             System.out.printf(TEST_DONE, testName);
+                            methodResult = classResult.new MethodResult(test, true, Timer.stop(), EMPTY_STRING, null);
                         } else if (t instanceof AssertionError) {
                             printFailMessage(testName, t.getMessage());
+                            methodResult = classResult.new MethodResult(test, false, Timer.stop(), t.getMessage(), t);
                         } else {
                             printFailMessage(testName, t.getClass().getName());
+                            methodResult = classResult.new MethodResult(test, false, Timer.stop(), t.getClass().getName(), t);
                             t.printStackTrace(System.out);
                         }
 
                     } catch (IllegalArgumentException e) {
                         System.out.printf(TEST_MISSED, testName);
+                        methodResult = classResult.new MethodResult(test, false, Timer.stop(), TEST_MISSED, e);
                     }
 
                     // Выполняем все методы аннотированные @After
                     for (Method after : afterMap.get(clazz)) {
                         after.invoke(instance);
                     }
+
+                    classResult.getMethodResultSet().add(methodResult);
                 }
 
             } catch (InstantiationException e) {
                 System.out.printf(CLASS_MISSED, clazz.getName(), DEFAULT_CONSTRUCTOR_MISSED);
+                classResult.fail(DEFAULT_CONSTRUCTOR_MISSED, e);
             } catch (IllegalArgumentException e) {
                 System.out.printf(CLASS_MISSED, clazz.getName(), BEFORE_AFTER_METHODS_SIGNATURE);
+                classResult.fail(BEFORE_AFTER_METHODS_SIGNATURE, e);
             } catch (InvocationTargetException e) {
                 System.out.printf(CLASS_MISSED, clazz.getName(), e.getCause());
                 e.getCause().printStackTrace(System.out);
+                classResult.fail(e.getCause().getClass().getName(), e.getCause());
             } catch (IllegalAccessException e) {
+                classResult.fail(e.getClass().getName(), e);
                 e.printStackTrace();
             }
+
+            testResults.add(classResult);
         }
     }
 
@@ -140,6 +162,8 @@ public class TestRunner {
             testMap.put(clazz, test);
             afterMap.put(clazz, after);
         }
+
+        testResults.clear();
     }
 
     private void printFailMessage(String testName, String cause) {
