@@ -15,9 +15,12 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
+import com.lwerl.testframework.util.Timer;
+
 import static com.lwerl.testframework.constant.Causes.*;
 import static com.lwerl.testframework.constant.Literals.*;
 import static com.lwerl.testframework.constant.Messages.*;
+
 
 public class TestRunner {
 
@@ -72,29 +75,32 @@ public class TestRunner {
 
                     try {
 
-                        com.lwerl.testframework.util.Timer.start();
+                        Timer.start();
                         test.invoke(instance);
 
                         if (exceptionClass.equals(Test.Empty.class)) {
-                            methodResult = classResult.new MethodResult(test, true, com.lwerl.testframework.util.Timer.stop(), EMPTY_STRING, null);
+                            methodResult = classResult.new MethodResult(test, true, Timer.stop(), EMPTY_STRING, null);
                         } else {
-                            methodResult = classResult.new MethodResult(test, false, com.lwerl.testframework.util.Timer.stop(), String.format(EXPECTED_EXCEPTION, exceptionClass.getName()), null);
+                            String description = String.format(EXPECTED_EXCEPTION, exceptionClass.getName());
+                            methodResult = classResult.new MethodResult(test, false, Timer.stop(), description, null);
                         }
 
                     } catch (InvocationTargetException e) {
 
                         Throwable t = e.getCause();
+                        String exceptionName = t.getClass().getName();
+                        String exceptionMessage = t.getMessage();
 
                         if (exceptionClass.isInstance(t)) {
-                            methodResult = classResult.new MethodResult(test, true, com.lwerl.testframework.util.Timer.stop(), EMPTY_STRING, null);
+                            methodResult = classResult.new MethodResult(test, true, Timer.stop(), EMPTY_STRING, null);
                         } else if (t instanceof AssertionError) {
-                            methodResult = classResult.new MethodResult(test, false, com.lwerl.testframework.util.Timer.stop(), t.getMessage(), t);
+                            methodResult = classResult.new MethodResult(test, false, Timer.stop(), exceptionMessage, t);
                         } else {
-                            methodResult = classResult.new MethodResult(test, false, com.lwerl.testframework.util.Timer.stop(), t.getClass().getName(), t);
+                            methodResult = classResult.new MethodResult(test, false, Timer.stop(), exceptionName, t);
                         }
 
                     } catch (IllegalArgumentException e) {
-                        methodResult = classResult.new MethodResult(test, false, com.lwerl.testframework.util.Timer.stop(), TEST_METHOD_SIGNATURE, e);
+                        methodResult = classResult.new MethodResult(test, false, Timer.stop(), TEST_METHOD_SIGNATURE, e);
                     }
 
                     // Выполняем все методы аннотированные @After
