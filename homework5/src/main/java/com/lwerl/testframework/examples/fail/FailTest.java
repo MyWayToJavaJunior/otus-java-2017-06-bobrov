@@ -1,18 +1,21 @@
 package com.lwerl.testframework.examples.fail;
 
 import com.lwerl.testframework.annotation.Test;
-import org.junit.Assert;
 
 public class FailTest {
 
-    @Test(exception = NullPointerException.class)
-    public void test1() {
-
+    @Test
+    public void test4() {
+        throw new AssertionError();
     }
 
     @Test
     public void test2() {
-        throw new AssertionError("AssertionError");
+        throw new AssertionError("Assertions Message");
+    }
+
+    @Test(exception = NullPointerException.class)
+    public void test1() {
     }
 
     @Test
@@ -21,7 +24,6 @@ public class FailTest {
     }
 
     @Test
-    public void test4() {
-        Assert.assertTrue(1 == 2);
+    public void test5(int a) {
     }
 }
