@@ -1,15 +1,15 @@
 package com.lwerl.testframework;
 
 import java.lang.reflect.Method;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import static com.lwerl.testframework.constant.Literals.*;
+import static com.lwerl.testframework.constant.Literals.EMPTY_STRING;
 
 public class ClassResult {
 
     private Class<?> testClass;
-    private Set<MethodResult> methodResultSet;
+    private List<MethodResult> methodResultSet;
     private boolean isExecuted;
     private String causeDescription;
     private Throwable cause;
@@ -17,7 +17,7 @@ public class ClassResult {
     public ClassResult(Class<?> testClass) {
         this.testClass = testClass;
         this.isExecuted = true;
-        this.methodResultSet = new LinkedHashSet<>();
+        this.methodResultSet = new ArrayList<>();
         this.causeDescription = EMPTY_STRING;
     }
 
@@ -25,7 +25,7 @@ public class ClassResult {
         return testClass;
     }
 
-    public Set<MethodResult> getMethodResultSet() {
+    public List<MethodResult> getMethodResultSet() {
         return methodResultSet;
     }
 

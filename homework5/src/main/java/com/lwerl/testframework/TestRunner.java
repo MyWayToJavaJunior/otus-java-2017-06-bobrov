@@ -3,71 +3,59 @@ package com.lwerl.testframework;
 import com.lwerl.testframework.annotation.After;
 import com.lwerl.testframework.annotation.Before;
 import com.lwerl.testframework.annotation.Test;
-import com.lwerl.testframework.util.ResultPrinter;
-import com.lwerl.testframework.util.Timer;
+import com.lwerl.testframework.util.StopWatch;
+import com.lwerl.testframework.util.Utils;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.lwerl.testframework.constant.Causes.*;
-import static com.lwerl.testframework.constant.Literals.*;
-import static com.lwerl.testframework.constant.Messages.CLASS_NOT_LOAD_ERROR;
+import static com.lwerl.testframework.constant.Literals.EMPTY_STRING;
 import static com.lwerl.testframework.constant.Messages.WRONG_PACKAGE_NAME_ERROR;
-
 
 public class TestRunner {
 
-    private Set<Class<?>> classes;
-    private Set<ClassResult> testResults = new LinkedHashSet<>();
-    private Map<Class<?>, Set<Method>> beforeMap = new HashMap<>();
-    private Map<Class<?>, Set<Method>> testMap = new HashMap<>();
-    private Map<Class<?>, Set<Method>> afterMap = new HashMap<>();
+    private List<ClassInfo> classInfoList = new ArrayList<>();
+    private List<ClassResult> classResultList = new ArrayList<>();
 
     public TestRunner(Class<?>... classes) {
-        this.classes = new LinkedHashSet<>(Arrays.asList(classes));
+        preprocessor(classes);
     }
 
     public TestRunner(String packageName) {
         try {
-            setClasses(packageName);
+            preprocessor(Utils.getClassesInPackage(packageName).toArray(new Class<?>[0]));
         } catch (IOException | URISyntaxException e) {
             System.out.printf(WRONG_PACKAGE_NAME_ERROR, e.getMessage());
         }
     }
 
-    public Set<ClassResult> getTestResults() {
-        return testResults;
+    public List<ClassInfo> getClassInfoList() {
+        return classInfoList;
+    }
+
+    public List<ClassResult> getClassResultList() {
+        return classResultList;
     }
 
     public void run() {
-        preprocessor();
-        test();
-    }
+        for (ClassInfo classInfo : classInfoList) {
 
-    public void print() {
-        ResultPrinter.print(testResults, false);
-    }
-
-    private void test() {
-        for (Class<?> clazz : classes) {
-
+            Class<?> clazz = classInfo.getClazz();
             ClassResult classResult = new ClassResult(clazz);
 
             try {
 
-                for (Method test : testMap.get(clazz)) {
+                for (Method test : classInfo.getTestList()) {
                     ClassResult.MethodResult methodResult;
 
                     Object instance = clazz.newInstance();
 
-                    for (Method before : beforeMap.get(clazz)) {
+                    for (Method before : classInfo.getBeforeList()) {
                         before.invoke(instance);
                     }
 
@@ -75,14 +63,14 @@ public class TestRunner {
 
                     try {
 
-                        Timer.start();
+                        StopWatch.start();
                         test.invoke(instance);
 
                         if (exceptionClass.equals(Test.Empty.class)) {
-                            methodResult = classResult.new MethodResult(test, true, Timer.stop(), EMPTY_STRING, null);
+                            methodResult = classResult.new MethodResult(test, true, StopWatch.stop(), EMPTY_STRING, null);
                         } else {
                             String description = String.format(EXPECTED_EXCEPTION, exceptionClass.getName());
-                            methodResult = classResult.new MethodResult(test, false, Timer.stop(), description, null);
+                            methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), description, null);
                         }
 
                     } catch (InvocationTargetException e) {
@@ -92,19 +80,19 @@ public class TestRunner {
                         String exceptionMessage = t.getMessage();
 
                         if (exceptionClass.isInstance(t)) {
-                            methodResult = classResult.new MethodResult(test, true, Timer.stop(), EMPTY_STRING, null);
+                            methodResult = classResult.new MethodResult(test, true, StopWatch.stop(), EMPTY_STRING, null);
                         } else if (t instanceof AssertionError) {
-                            methodResult = classResult.new MethodResult(test, false, Timer.stop(), exceptionMessage, t);
+                            methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), exceptionMessage, t);
                         } else {
-                            methodResult = classResult.new MethodResult(test, false, Timer.stop(), exceptionName, t);
+                            methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), exceptionName, t);
                         }
 
                     } catch (IllegalArgumentException e) {
-                        methodResult = classResult.new MethodResult(test, false, Timer.stop(), TEST_METHOD_SIGNATURE, e);
+                        methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), TEST_METHOD_SIGNATURE, e);
                     }
 
                     // Выполняем все методы аннотированные @After
-                    for (Method after : afterMap.get(clazz)) {
+                    for (Method after : classInfo.getAfterList()) {
                         after.invoke(instance);
                     }
 
@@ -121,16 +109,15 @@ public class TestRunner {
                 classResult.fail(e.getClass().getName(), e);
             }
 
-            testResults.add(classResult);
+            classResultList.add(classResult);
         }
     }
 
-    private void preprocessor() {
-        Set<Class<?>> excluded = new LinkedHashSet<>();
+    private void preprocessor(Class<?>... classes) {
         for (Class<?> clazz : classes) {
-            LinkedHashSet<Method> before = new LinkedHashSet<>();
-            LinkedHashSet<Method> test = new LinkedHashSet<>();
-            LinkedHashSet<Method> after = new LinkedHashSet<>();
+            List<Method> before = new ArrayList<>();
+            List<Method> test = new ArrayList<>();
+            List<Method> after = new ArrayList<>();
 
             for (Method m : clazz.getMethods()) {
                 if (m.getAnnotation(Before.class) != null) {
@@ -143,62 +130,14 @@ public class TestRunner {
                     after.add(m);
                 }
             }
-            if (test.isEmpty()) {
-                excluded.add(clazz);
-            } else {
-                beforeMap.put(clazz, before);
-                testMap.put(clazz, test);
-                afterMap.put(clazz, after);
+            if (!test.isEmpty()) {
+                ClassInfo classInfo = new ClassInfo(clazz);
+                classInfo.setBeforeList(before);
+                classInfo.setTestList(test);
+                classInfo.setAfterList(after);
+                classInfoList.add(classInfo);
             }
         }
-        classes.removeAll(excluded);
-        testResults.clear();
-    }
-
-    private void setClasses(String packageName) throws URISyntaxException, IOException {
-
-        Set<Path> classpaths = new LinkedHashSet<>();
-        String[] packages = packageName.split(PACKAGE_SEPARATOR_REGEXP);
-
-        URLClassLoader system = (URLClassLoader) ClassLoader.getSystemClassLoader();
-
-        for (URL url : system.getURLs()) {
-            if (!url.toString().endsWith(JAR_FILE_EXTENSION)) {
-                classpaths.add(Paths.get(url.toURI()));
-            }
-        }
-
-        classes = new LinkedHashSet<>();
-        for (Path classpath : classpaths) {
-            Path dir = Paths.get(classpath.toString(), packages);
-            ClassFileVisitor classFileVisitor = new ClassFileVisitor(classpath);
-            Files.walkFileTree(dir, classFileVisitor);
-        }
-    }
-
-    private class ClassFileVisitor extends SimpleFileVisitor<Path> {
-        private Path classpath;
-
-        ClassFileVisitor(Path classpath) {
-            this.classpath = classpath;
-        }
-
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            if (attrs.isRegularFile()) {
-                String className = classpath.relativize(file)
-                        .toString()
-                        .replace(FileSystems.getDefault().getSeparator(), PACKAGE_SEPARATOR);
-
-                if (className.endsWith(CLASS_FILE_EXTENSION)) {
-                    try {
-                        classes.add(Class.forName(className.replace(CLASS_FILE_EXTENSION, EMPTY_STRING)));
-                    } catch (ClassNotFoundException e) {
-                        System.out.printf(CLASS_NOT_LOAD_ERROR, className.replace(CLASS_FILE_EXTENSION, EMPTY_STRING));
-                    }
-                }
-            }
-            return FileVisitResult.CONTINUE;
-        }
+        classResultList.clear();
     }
 }

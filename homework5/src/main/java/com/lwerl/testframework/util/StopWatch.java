@@ -1,8 +1,10 @@
 package com.lwerl.testframework.util;
 
-public class Timer {
+import static com.lwerl.testframework.constant.Messages.STOPWATCH_NOT_STARTED;
+
+public class StopWatch {
     private static long startTime = -1;
-    private static String TIMER_NOT_STARTED = "Таймер не запушен.";
+
 
     public static void start() {
         startTime = System.currentTimeMillis();
@@ -14,7 +16,7 @@ public class Timer {
             start();
             return lapResult;
         } else {
-            System.out.println(TIMER_NOT_STARTED);
+            System.out.println(STOPWATCH_NOT_STARTED);
             return -1;
         }
     }
@@ -25,7 +27,7 @@ public class Timer {
             startTime = -1;
             return lapResult;
         } else {
-            System.out.println(TIMER_NOT_STARTED);
+            System.out.println(STOPWATCH_NOT_STARTED);
             return -1;
         }
     }

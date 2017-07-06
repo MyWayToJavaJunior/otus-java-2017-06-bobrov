@@ -2,16 +2,16 @@ package com.lwerl.testframework.util;
 
 import com.lwerl.testframework.ClassResult;
 
-import java.util.Set;
+import java.util.List;
 
 import static com.lwerl.testframework.constant.Messages.*;
 
-final public class ResultPrinter {
+public class ResultPrinter {
 
     private ResultPrinter() {
     }
 
-    public static void print(Set<ClassResult> results, boolean withException) {
+    public static void print(List<ClassResult> results, boolean withException) {
         for (ClassResult classResult : results) {
             String className = classResult.getTestClass().getName();
             if (classResult.isExecuted()) {
