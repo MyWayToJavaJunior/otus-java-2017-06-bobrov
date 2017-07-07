@@ -1,4 +1,4 @@
-package com.lwerl.testframework;
+package com.lwerl.testframework.framework;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

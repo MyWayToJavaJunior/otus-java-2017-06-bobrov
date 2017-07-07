@@ -20,8 +20,9 @@ final public class Messages {
     public final static String TEST_FAILED = TEST_PREFIX + " %s провален.\n";
     public final static String TEST_FAILED_WITH_CAUSE = TEST_PREFIX + " %s провален: %s.\n";
 
-    //Util
+    //Other
     public static String STOPWATCH_NOT_STARTED = "Секундомер не запушен.";
+    public static String WAS_ALREADY_STARTED = "Тест уже был запущен";
 
     private Messages() {
     }

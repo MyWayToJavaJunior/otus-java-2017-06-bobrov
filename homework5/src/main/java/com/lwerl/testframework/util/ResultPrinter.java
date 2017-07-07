@@ -1,6 +1,6 @@
 package com.lwerl.testframework.util;
 
-import com.lwerl.testframework.ClassResult;
+import com.lwerl.testframework.framework.ClassResult;
 
 import java.util.List;
 
@@ -9,6 +9,10 @@ import static com.lwerl.testframework.constant.Messages.*;
 public class ResultPrinter {
 
     private ResultPrinter() {
+    }
+
+    public static void print(List<ClassResult> results) {
+        print(results, false);
     }
 
     public static void print(List<ClassResult> results, boolean withException) {
