@@ -43,6 +43,9 @@ public class TestRunner {
     }
 
     public void run() {
+
+        classResultList.clear();
+
         for (ClassInfo classInfo : classInfoList) {
 
             Class<?> clazz = classInfo.getClazz();
@@ -138,6 +141,5 @@ public class TestRunner {
                 classInfoList.add(classInfo);
             }
         }
-        classResultList.clear();
     }
 }
