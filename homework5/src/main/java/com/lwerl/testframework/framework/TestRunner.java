@@ -57,52 +57,12 @@ public class TestRunner {
                 try {
 
                     for (Method test : classInfo.getTestList()) {
-                        ClassResult.MethodResult methodResult;
-
                         Object instance = clazz.newInstance();
 
-                        for (Method before : classInfo.getBeforeList()) {
-                            before.invoke(instance);
-                        }
+                        invokeBefore(classInfo, instance);
+                        invokeTest(classResult, test, instance);
+                        invokeAfter(classInfo, instance);
 
-                        Class exceptionClass = test.getAnnotation(Test.class).exception();
-
-                        try {
-
-                            StopWatch.start();
-                            test.invoke(instance);
-
-                            if (exceptionClass.equals(Test.Empty.class)) {
-                                methodResult = classResult.new MethodResult(test, true, StopWatch.stop(), EMPTY_STRING, null);
-                            } else {
-                                String description = String.format(EXPECTED_EXCEPTION, exceptionClass.getName());
-                                methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), description, null);
-                            }
-
-                        } catch (InvocationTargetException e) {
-
-                            Throwable t = e.getCause();
-                            String exceptionName = t.getClass().getName();
-                            String exceptionMessage = t.getMessage();
-
-                            if (exceptionClass.isInstance(t)) {
-                                methodResult = classResult.new MethodResult(test, true, StopWatch.stop(), EMPTY_STRING, null);
-                            } else if (t instanceof AssertionError) {
-                                methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), exceptionMessage, t);
-                            } else {
-                                methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), exceptionName, t);
-                            }
-
-                        } catch (IllegalArgumentException e) {
-                            methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), TEST_METHOD_SIGNATURE, e);
-                        }
-
-                        // Выполняем все методы аннотированные @After
-                        for (Method after : classInfo.getAfterList()) {
-                            after.invoke(instance);
-                        }
-
-                        classResult.getMethodResultSet().add(methodResult);
                     }
 
                 } catch (InstantiationException e) {
@@ -146,5 +106,55 @@ public class TestRunner {
                 classInfoList.add(classInfo);
             }
         }
+    }
+
+    private void invokeBefore(ClassInfo classInfo, Object instance) throws InvocationTargetException, IllegalAccessException, IllegalArgumentException {
+        for (Method before : classInfo.getBeforeList()) {
+            before.invoke(instance);
+        }
+    }
+
+    private void invokeAfter(ClassInfo classInfo, Object instance) throws InvocationTargetException, IllegalAccessException {
+        for (Method after : classInfo.getAfterList()) {
+            after.invoke(instance);
+        }
+    }
+
+    private void invokeTest(ClassResult classResult, Method test, Object instance) {
+        ClassResult.MethodResult methodResult;
+        Class exceptionClass = test.getAnnotation(Test.class).exception();
+
+        try {
+
+            StopWatch.start();
+            test.invoke(instance);
+
+            if (exceptionClass.equals(Test.Empty.class)) {
+                methodResult = classResult.new MethodResult(test, true, StopWatch.stop(), EMPTY_STRING, null);
+            } else {
+                String description = String.format(EXPECTED_EXCEPTION, exceptionClass.getName());
+                methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), description, null);
+            }
+
+        } catch (InvocationTargetException e) {
+
+            Throwable t = e.getCause();
+            String exceptionName = t.getClass().getName();
+            String exceptionMessage = t.getMessage();
+
+            if (exceptionClass.isInstance(t)) {
+                methodResult = classResult.new MethodResult(test, true, StopWatch.stop(), EMPTY_STRING, null);
+            } else if (t instanceof AssertionError) {
+                methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), exceptionMessage, t);
+            } else {
+                methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), exceptionName, t);
+            }
+
+        } catch (IllegalArgumentException e) {
+            methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), TEST_METHOD_SIGNATURE, e);
+        } catch (IllegalAccessException e) {
+            methodResult = classResult.new MethodResult(test, false, StopWatch.stop(), e.getClass().getName(), e);
+        }
+        classResult.getMethodResultList().add(methodResult);
     }
 }

@@ -20,9 +20,9 @@ public class ResultPrinter {
             String className = classResult.getTestClass().getName();
             if (classResult.isExecuted()) {
                 System.out.printf(CLASS_TITLE, className);
-                int testCount = classResult.getMethodResultSet().size();
+                int testCount = classResult.getMethodResultList().size();
                 int passedCount = 0;
-                for (ClassResult.MethodResult methodResult : classResult.getMethodResultSet()) {
+                for (ClassResult.MethodResult methodResult : classResult.getMethodResultList()) {
                     String methodName = methodResult.getTestMethod().getName();
                     if (methodResult.isPassed()) {
                         passedCount++;
