@@ -22,7 +22,7 @@ public class TestRunner {
 
     private List<ClassInfo> classInfoList = new ArrayList<>();
     private List<ClassResult> classResultList = new ArrayList<>();
-    private boolean wasRunnning;
+    private boolean wasStarted;
 
     public TestRunner(Class<?>... classes) {
         preprocessor(classes);
@@ -46,7 +46,7 @@ public class TestRunner {
 
     public void run() {
 
-        if (wasRunnning) {
+        if (wasStarted) {
             System.out.println(WAS_ALREADY_STARTED);
         } else {
             for (ClassInfo classInfo : classInfoList) {
@@ -77,7 +77,7 @@ public class TestRunner {
 
                 classResultList.add(classResult);
             }
-            wasRunnning = true;
+            wasStarted = true;
         }
     }
 
