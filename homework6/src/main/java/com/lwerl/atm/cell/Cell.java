@@ -1,14 +1,18 @@
 package com.lwerl.atm.cell;
 
-/**
- * Created by lWeRl on 15.07.2017.
- */
+import com.lwerl.atm.banknote.Banknote;
+
+import java.util.List;
+
 public interface Cell {
-    int getBanknotesFromCell(int count);
+    List<Banknote> getBanknotesFromCell(int count);
 
     int getNumbersOfBanknotes();
 
-    int getCellBanknoteDenomination();
+    void setNumbersOfBanknotes(int count);
+
+    int getBanknoteDenomination();
 
     void increaseNumbersOfBanknotes(int count);
+
 }

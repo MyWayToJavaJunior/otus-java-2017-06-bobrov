@@ -2,6 +2,10 @@ package com.lwerl.atm.cell;
 
 import com.lwerl.atm.banknote.Banknote;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class StandardCell implements Cell {
 
     private Banknote banknote;
@@ -13,7 +17,7 @@ public class StandardCell implements Cell {
     }
 
     @Override
-    public int getBanknotesFromCell(int count) {
+    public List<Banknote> getBanknotesFromCell(int count) {
         int result;
         if (count < this.count) {
             result = count;
@@ -22,7 +26,8 @@ public class StandardCell implements Cell {
             result = this.count;
             this.count = 0;
         }
-        return result;
+        Stream<Banknote> stream = Stream.generate(() -> banknote).limit(result);
+        return stream.collect(Collectors.toList());
     }
 
     @Override
@@ -31,7 +36,12 @@ public class StandardCell implements Cell {
     }
 
     @Override
-    public int getCellBanknoteDenomination() {
+    public void setNumbersOfBanknotes(int count) {
+        this.count = count;
+    }
+
+    @Override
+    public int getBanknoteDenomination() {
         return banknote.getDenomination();
     }
 

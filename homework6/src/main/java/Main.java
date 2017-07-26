@@ -1,12 +1,22 @@
-import com.lwerl.atm.ATM;
-import com.lwerl.atm.StandardATM;
+import com.lwerl.department.ATMDepartment;
+import com.lwerl.department.ATMInfo;
 
-/**
- * Created by lWeRl on 15.07.2017.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
-        ATM atm = new StandardATM(100);
-        atm.start();
+        List<ATMInfo> atmInfoList = new ArrayList<>();
+        atmInfoList.add(new ATMInfo(150, "key1"));
+        atmInfoList.add(new ATMInfo(100, "key2"));
+        atmInfoList.add(new ATMInfo(50, "key3"));
+        ATMDepartment atmDepartment = new ATMDepartment(atmInfoList);
+        System.out.println(atmDepartment.getAllBalance());
+        atmDepartment.getAtmInfoList().get(0).getAtm().executeFromMenu();
+        System.out.println(atmDepartment.getAllBalance());
+        atmDepartment.getAtmInfoList().get(0).getAtm().executeFromMenu();
+        System.out.println(atmDepartment.getAllBalance());
+        atmDepartment.initAllATM();
+        System.out.println(atmDepartment.getAllBalance());
     }
 }
