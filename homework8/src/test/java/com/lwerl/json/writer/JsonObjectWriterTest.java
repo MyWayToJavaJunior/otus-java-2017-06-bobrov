@@ -68,7 +68,7 @@ public class JsonObjectWriterTest {
         Object o1 = new Object();
         Assert.assertEquals(gson.toJson(o1), writer.toJson(o1));
 
-        TestObject o2 = new TestObject("1", 20, false, new Date(), new Object());
+        TestObject o2 = new TestObject("1", 20, false, new Date(), null);
         Assert.assertEquals(gson.toJson(o2), writer.toJson(o2));
 
         Map<Object, Object> o3 = new HashMap<>();
@@ -80,8 +80,7 @@ public class JsonObjectWriterTest {
         Map<String, TestObject> o4 = new HashMap<>();
         o4.put("test1", new TestObject("1", 20, false, new Date(), new Object()));
         o4.put("test2", new TestObject(2, "28", new Date(), new Object(), true));
-        //Gson не серриализует null поле если объект это значение карты
-        //o4.put("test3", new TestObject(null, 28.3, new Date(), "what!", true));
+        o4.put("test3", new TestObject(null, 28.3, new Date(), "what!", true));
         Assert.assertEquals(gson.toJson(o4), writer.toJson(o4));
     }
 

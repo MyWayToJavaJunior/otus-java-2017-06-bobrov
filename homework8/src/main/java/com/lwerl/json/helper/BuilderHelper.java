@@ -88,7 +88,7 @@ public class BuilderHelper {
 
     public static void addObjectToObjectBuilder(JsonObjectBuilder builder, String name, Object obj, SimpleDateFormat format) {
         if (isNullObject(obj)) {
-            builder.addNull(name);
+            // Not add null field like in gson
         } else if (isStringObject(obj)) {
             builder.add(name, obj.toString());
         } else if (isDecimalNumberObject(obj)) {
