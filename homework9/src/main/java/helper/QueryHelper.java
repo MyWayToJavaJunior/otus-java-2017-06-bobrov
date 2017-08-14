@@ -44,7 +44,7 @@ public class QueryHelper {
         return query;
     }
 
-    public static <T extends DataSet> String makeLoadQuery(final Object primaryKey, TableInfo table) {
+    public static String makeLoadQuery(final Object primaryKey, TableInfo table) {
         if (primaryKey != null) {
             return "SELECT * FROM \""
                     + table.getName()
