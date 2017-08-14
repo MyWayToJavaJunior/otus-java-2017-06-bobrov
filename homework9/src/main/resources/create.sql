@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS "user";
+CREATE TABLE "user"
+(
+  id   BIGSERIAL PRIMARY KEY NOT NULL,
+  name VARCHAR DEFAULT NULL,
+  age  INT DEFAULT 0         NOT NULL
+);
+CREATE UNIQUE INDEX user_id_uindex
+  ON "user" (id);
