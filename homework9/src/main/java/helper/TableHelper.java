@@ -18,8 +18,11 @@ public class TableHelper {
     }
 
     public static TableInfo makeTableInfo(Class<? extends DataSet> clazz) {
+        TableInfo result = null;
         Entity entityAno = clazz.getAnnotation(Entity.class);
+
         if (entityAno != null) {
+
             String name;
             ColumnInfo primaryKey = null;
             List<ColumnInfo> columns = new ArrayList<>();
@@ -31,42 +34,44 @@ public class TableHelper {
 
             for (Field field : fields) {
 
-                field.setAccessible(true);
-                Column columnAno = field.getAnnotation(Column.class);
-                ColumnInfo column = null;
-
-                if (columnAno != null) {
-                    if (!columnAno.name().equals("")) {
-                        column = new ColumnInfo(columnAno.name(), field);
-                    } else {
-                        String columnName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
-                        column = new ColumnInfo(columnName, field);
-                    }
-                }
+                ColumnInfo column = getColumnInfo(field);
 
                 if (primaryKey == null && field.getAnnotation(Id.class) != null) {
+
                     if (column == null) {
                         String columnName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
                         primaryKey = new ColumnInfo(columnName, field);
                     } else {
                         primaryKey = column;
                     }
-                } else {
-                    if (column != null) {
-                        columns.add(column);
-                    }
+
+                } else if (column != null) {
+                    columns.add(column);
                 }
+
             }
 
             if (primaryKey != null) {
-                return new TableInfo(name, primaryKey, columns);
-            } else {
-                return null;
+                result = new TableInfo(name, primaryKey, columns);
             }
-
-        } else {
-            return null;
         }
+        return result;
+    }
+
+    private static ColumnInfo getColumnInfo(Field field) {
+        field.setAccessible(true);
+        Column columnAno = field.getAnnotation(Column.class);
+        ColumnInfo column = null;
+
+        if (columnAno != null) {
+            if (!columnAno.name().equals("")) {
+                column = new ColumnInfo(columnAno.name(), field);
+            } else {
+                String columnName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
+                column = new ColumnInfo(columnName, field);
+            }
+        }
+        return column;
     }
 
     private static List<Field> getEntityFields(Class<? extends DataSet> clazz) {
