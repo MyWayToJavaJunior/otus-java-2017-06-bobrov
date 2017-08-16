@@ -3,3 +3,4 @@
 **/out
 **.iml
 **/dependency-reduced-pom.xml
+**/*.log

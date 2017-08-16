@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="1 seconds">
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <!-- To enable JMX Management -->
+    <jmxConfigurator/>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target>
+        <filter class="com.lwerl.orm.log.StdOutFilter" />
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%-6level%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="error" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <filter class="com.lwerl.orm.log.StdErrFilter" />
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%-6level%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.lwerl.orm" level="ALL"/>
+
+    <logger name="org.hibernate" level="INFO"/>
+    <logger name="org.hibernate.type" level="INFO" />
+
+    <root level="ALL">
+        <appender-ref ref="console"/>
+        <appender-ref ref="error"/>
+    </root>
+</configuration>

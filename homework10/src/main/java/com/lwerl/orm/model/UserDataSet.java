@@ -1,4 +1,4 @@
-package model;
+package com.lwerl.orm.model;
 
 import javax.persistence.*;
 import java.util.List;
@@ -13,10 +13,10 @@ public class UserDataSet extends DataSet{
     @Column
     private Integer age;
 
-//    @OneToMany
-//    private List<PhoneDataSet> phones;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PhoneDataSet> phones;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private AddressDataSet address;
 
     public UserDataSet() {
@@ -39,13 +39,13 @@ public class UserDataSet extends DataSet{
         this.age = age;
     }
 
-//    public List<PhoneDataSet> getPhones() {
-//        return phones;
-//    }
-//
-//    public void setPhones(List<PhoneDataSet> phones) {
-//        this.phones = phones;
-//    }
+    public List<PhoneDataSet> getPhones() {
+        return phones;
+    }
+
+    public void setPhones(List<PhoneDataSet> phones) {
+        this.phones = phones;
+    }
 
     public AddressDataSet getAddress() {
         return address;

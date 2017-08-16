@@ -1,12 +1,9 @@
-package model;
+package com.lwerl.orm.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "address")
+@Table(name = "\"address\"")
 public class AddressDataSet extends DataSet {
 
     @Column

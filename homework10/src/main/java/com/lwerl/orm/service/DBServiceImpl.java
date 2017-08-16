@@ -1,7 +1,7 @@
-package service;
+package com.lwerl.orm.service;
 
-import dao.UserDAO;
-import model.UserDataSet;
+import com.lwerl.orm.dao.UserDAO;
+import com.lwerl.orm.model.UserDataSet;
 
 
 public class DBServiceImpl implements DBService {

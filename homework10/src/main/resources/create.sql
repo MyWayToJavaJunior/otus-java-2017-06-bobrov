@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS "address";
-DROP TABLE IF EXISTS "phone";
-DROP TABLE IF EXISTS "user";
+DROP TABLE IF EXISTS "address" CASCADE;
+DROP TABLE IF EXISTS "phone" CASCADE;
+DROP TABLE IF EXISTS "user" CASCADE;
 
 CREATE TABLE "user"
 (
@@ -29,3 +29,7 @@ CREATE TABLE "address"
   CONSTRAINT address_user_id_fk FOREIGN KEY (user_id) REFERENCES "user" (id)
 );
 CREATE UNIQUE INDEX address_id_uindex ON "address" (id);
+
+ALTER TABLE "user"
+  ADD CONSTRAINT user_address_id_fk
+FOREIGN KEY (address_id) REFERENCES address (id);

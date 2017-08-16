@@ -1,9 +1,9 @@
-package dao;
+package com.lwerl.orm.dao;
 
-import model.UserDataSet;
+import com.lwerl.orm.model.UserDataSet;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import service.HibernateService;
+import com.lwerl.orm.service.HibernateService;
 
 public class UserDAO {
 

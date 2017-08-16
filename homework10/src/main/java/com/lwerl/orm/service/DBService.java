@@ -1,6 +1,6 @@
-package service;
+package com.lwerl.orm.service;
 
-import model.UserDataSet;
+import com.lwerl.orm.model.UserDataSet;
 
 public interface DBService {
 

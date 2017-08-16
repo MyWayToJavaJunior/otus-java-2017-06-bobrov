@@ -1,6 +1,6 @@
-package service;
+package com.lwerl.orm.service;
 
-import helper.HibernateHelper;
+import com.lwerl.orm.helper.HibernateHelper;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -28,5 +28,9 @@ public class HibernateService {
 
     public Session getSession() {
         return sessionFactory.openSession();
+    }
+
+    public void close() {
+        sessionFactory.close();
     }
 }
