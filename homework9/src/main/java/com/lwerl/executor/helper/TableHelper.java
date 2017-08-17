@@ -1,9 +1,9 @@
-package helper;
+package com.lwerl.executor.helper;
 
 import com.google.common.base.CaseFormat;
-import info.ColumnInfo;
-import info.TableInfo;
-import model.DataSet;
+import com.lwerl.executor.info.ColumnInfo;
+import com.lwerl.executor.info.TableInfo;
+import com.lwerl.executor.model.DataSet;
 
 import javax.persistence.*;
 import java.lang.reflect.Field;

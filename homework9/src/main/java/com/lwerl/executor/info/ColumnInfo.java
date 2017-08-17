@@ -1,7 +1,6 @@
-package info;
+package com.lwerl.executor.info;
 
 import java.lang.reflect.Field;
-
 
 public class ColumnInfo {
     private String name;

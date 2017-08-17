@@ -1,7 +1,7 @@
-package service;
+package com.lwerl.executor.service;
 
-import dao.GenericDAO;
-import model.UserDataSet;
+import com.lwerl.executor.dao.GenericDAO;
+import com.lwerl.executor.model.UserDataSet;
 
 public class DBServiceImpl implements DBService {
 

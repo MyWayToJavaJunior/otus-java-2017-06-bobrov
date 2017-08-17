@@ -1,4 +1,4 @@
-package model;
+package com.lwerl.executor.model;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

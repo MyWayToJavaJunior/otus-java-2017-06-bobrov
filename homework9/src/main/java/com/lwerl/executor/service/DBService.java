@@ -1,6 +1,6 @@
-package service;
+package com.lwerl.executor.service;
 
-import model.UserDataSet;
+import com.lwerl.executor.model.UserDataSet;
 
 public interface DBService {
 

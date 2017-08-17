@@ -1,4 +1,4 @@
-package executor;
+package com.lwerl.executor.executor;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 public class Executor {
 
-    private static Logger logger = Logger.getLogger("executor.Executor");
+    private static Logger logger = Logger.getLogger("com.lwerl.executor.Executor");
     private Connection connection;
 
     public Executor(Connection connection) {
@@ -34,5 +34,13 @@ public class Executor {
             logger.log(Level.SEVERE, "", e);
         }
         return null;
+    }
+
+    public void close() {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "", e);
+        }
     }
 }

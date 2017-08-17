@@ -1,4 +1,4 @@
-package info;
+package com.lwerl.executor.info;
 
 import java.util.List;
 

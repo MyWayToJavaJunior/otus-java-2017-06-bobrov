@@ -1,8 +1,8 @@
-package helper;
+package com.lwerl.executor.helper;
 
-import info.ColumnInfo;
-import info.TableInfo;
-import model.DataSet;
+import com.lwerl.executor.info.ColumnInfo;
+import com.lwerl.executor.info.TableInfo;
+import com.lwerl.executor.model.DataSet;
 
 import java.util.List;
 import java.util.stream.Collectors;

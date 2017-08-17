@@ -1,14 +1,14 @@
-package dao;
+package com.lwerl.executor.dao;
 
-import executor.Executor;
-import helper.QueryHelper;
-import info.ColumnInfo;
-import info.TableInfo;
-import model.DataSet;
+import com.lwerl.executor.executor.Executor;
+import com.lwerl.executor.helper.QueryHelper;
+import com.lwerl.executor.info.ColumnInfo;
+import com.lwerl.executor.info.TableInfo;
+import com.lwerl.executor.model.DataSet;
 
 import java.lang.reflect.Field;
 
-import static helper.TableHelper.makeTableInfo;
+import static com.lwerl.executor.helper.TableHelper.makeTableInfo;
 
 public class GenericDAO {
 
