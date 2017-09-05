@@ -16,7 +16,7 @@ public class DBServiceImpl implements DBService {
 
     private DBServiceImpl() {
         userDAO = new UserDAO();
-        cache = new SoftCacheEngineImpl<>(50, 500, 0);
+        cache = new SoftCacheEngineImpl<>(100, 1000, 0);
     }
 
     public static DBService getInstance() {

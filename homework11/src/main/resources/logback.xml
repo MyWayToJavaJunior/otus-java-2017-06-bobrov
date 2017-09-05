@@ -26,10 +26,11 @@
         </encoder>
     </appender>
 
-    <logger name="com.lwerl.orm" level="ALL"/>
+    <logger name="com.lwerl" level="ALL"/>
 
     <logger name="org.hibernate" level="INFO"/>
-    <logger name="org.hibernate.type" level="INFO" />
+    <logger name="org.hibernate.type" level="INFO"/>
+    <logger name="org.eclipse.jetty" level="INFO"/>
 
     <root level="ALL">
         <appender-ref ref="console"/>

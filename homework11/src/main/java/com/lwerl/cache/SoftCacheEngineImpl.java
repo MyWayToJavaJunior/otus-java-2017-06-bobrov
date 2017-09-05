@@ -7,7 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Function;
 
-public class SoftCacheEngineImpl<K, V> implements CacheEngine<K, V> {
+public class SoftCacheEngineImpl<K, V> implements CacheEngine<K, V>, CacheStatistic {
 
     private static final int TIME_THRESHOLD_MS = 1;
 
@@ -130,4 +130,31 @@ public class SoftCacheEngineImpl<K, V> implements CacheEngine<K, V> {
     private boolean isT1BeforeT2(long t1, long t2) {
         return t1 < t2 + TIME_THRESHOLD_MS;
     }
+
+    @Override
+    public int getMaxSize() {
+        return maxSize;
+    }
+
+    @Override
+    public long getIdleTime() {
+        return idleTime;
+    }
+
+    @Override
+    public long getLifeTime() {
+        return lifeTime;
+    }
+
+    @Override
+    public boolean isEternal() {
+        return isEternal;
+    }
+
+    @Override
+    public int getSize() {
+        return cache.size();
+    }
+
+
 }

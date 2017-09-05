@@ -1,0 +1,11 @@
+<#-- @ftlvariable name="error" type="java.lang.String" -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>${error}</title>
+</head>
+<body>
+    <h2>${error}</h2>
+</body>
+</html>
