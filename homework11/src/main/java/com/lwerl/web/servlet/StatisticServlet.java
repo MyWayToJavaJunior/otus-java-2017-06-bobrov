@@ -20,15 +20,19 @@ public class StatisticServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        Gson gson = new Gson();
-        CacheStatistic statistic = (CacheStatistic) DBServiceImpl.getInstance().getCache();
-        CacheStatisticResponse statisticResponse = CacheStatisticResponse.getStatistic(statistic);
-        String response = gson.toJson(statisticResponse);
-
         try {
-            resp.getWriter().print(response);
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.setContentType("application/json");
+            if (req.getSession().getAttribute("login") != null) {
+                Gson gson = new Gson();
+                CacheStatistic statistic = (CacheStatistic) DBServiceImpl.getInstance().getCache();
+                CacheStatisticResponse statisticResponse = CacheStatisticResponse.getStatistic(statistic);
+                String response = gson.toJson(statisticResponse);
+
+                resp.getWriter().print(response);
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.setContentType("application/json");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            }
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }

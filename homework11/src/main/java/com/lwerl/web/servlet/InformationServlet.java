@@ -16,9 +16,13 @@ public class InformationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.setContentType("text/html;charset=utf-8");
-            resp.getWriter().print(TemplateHelper.getPage("information", new HashMap<>()));
+            if (req.getSession().getAttribute("login") != null) {
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.setContentType("text/html;charset=utf-8");
+                resp.getWriter().print(TemplateHelper.getPage("information", new HashMap<>()));
+            } else {
+                resp.sendRedirect("");
+            }
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
