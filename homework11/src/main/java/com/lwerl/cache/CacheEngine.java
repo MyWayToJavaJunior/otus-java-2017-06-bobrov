@@ -6,10 +6,6 @@ public interface CacheEngine<K, V> {
 
     V get(K key);
 
-    int getHitCount();
-
-    int getMissCount();
-
     void dispose();
 
     void evict(K key);
