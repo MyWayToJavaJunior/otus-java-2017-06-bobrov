@@ -9,4 +9,6 @@ public interface CacheEngine<K, V> {
     void dispose();
 
     void evict(K key);
+
+    CacheStatistic getStatistic();
 }

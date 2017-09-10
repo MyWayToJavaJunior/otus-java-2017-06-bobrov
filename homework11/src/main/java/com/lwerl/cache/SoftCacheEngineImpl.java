@@ -104,6 +104,11 @@ public class SoftCacheEngineImpl<K, V> implements CacheEngine<K, V>, CacheStatis
         cache.remove(key);
     }
 
+    @Override
+    public CacheStatistic getStatistic() {
+        return this;
+    }
+
     private void addTimerPurging(long idleTime) {
         this.timer.scheduleAtFixedRate(new TimerTask() {
             @Override

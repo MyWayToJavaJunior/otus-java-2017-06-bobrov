@@ -23,7 +23,7 @@ public class StatisticServlet extends HttpServlet {
         try {
             if (req.getSession().getAttribute("login") != null) {
                 Gson gson = new Gson();
-                CacheStatistic statistic = (CacheStatistic) DBServiceImpl.getInstance().getCache();
+                CacheStatistic statistic = DBServiceImpl.getInstance().getCache().getStatistic();
                 CacheStatisticResponse statisticResponse = CacheStatisticResponse.getStatistic(statistic);
                 String response = gson.toJson(statisticResponse);
 
