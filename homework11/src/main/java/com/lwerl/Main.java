@@ -25,7 +25,7 @@ import java.util.Random;
 public class Main {
     private final static int PORT = 8090;
 
-    public static void main(String[] args) throws Exception {
+    /*public static void main(String[] args) throws Exception {
 
         Server server = new Server(PORT);
 
@@ -93,6 +93,8 @@ public class Main {
             }
         });
         t.start();
-    }
+    }*/
+
+
 }
 

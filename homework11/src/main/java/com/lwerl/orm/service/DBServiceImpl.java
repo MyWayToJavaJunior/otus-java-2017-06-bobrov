@@ -5,8 +5,9 @@ import com.lwerl.cache.MyElement;
 import com.lwerl.cache.SoftCacheEngineImpl;
 import com.lwerl.orm.dao.UserDAO;
 import com.lwerl.orm.model.UserDataSet;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class DBServiceImpl implements DBService {
 
     private static volatile DBService instance;

@@ -21,7 +21,7 @@ public class InformationServlet extends HttpServlet {
                 resp.setContentType("text/html;charset=utf-8");
                 resp.getWriter().print(TemplateHelper.getPage("information", new HashMap<>()));
             } else {
-                resp.sendRedirect("");
+                resp.sendRedirect("/login");
             }
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

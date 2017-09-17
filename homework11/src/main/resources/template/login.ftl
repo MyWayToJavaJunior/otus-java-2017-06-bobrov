@@ -20,7 +20,7 @@
 </p>
 <p><a href="/info">Statistic</a></p>
 <#else>
-<form name="test" method="post" action="/">
+<form name="test" method="post" action="/login">
     <p>Login: <input type="text" size="40" name="login"><input type="submit" value="Login"></p>
 </form>
 </#if>

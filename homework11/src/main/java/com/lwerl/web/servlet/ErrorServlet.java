@@ -1,7 +1,6 @@
 package com.lwerl.web.servlet;
 
 import com.lwerl.web.helper.TemplateHelper;
-import org.eclipse.jetty.server.Response;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,7 +17,7 @@ public class ErrorServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String error = resp.getStatus() + " - " + ((Response) resp).getReason();
+        String error = Integer.toString(resp.getStatus());
         Map<String, Object> data = new HashMap<>();
         data.put("error", error);
         resp.setStatus(HttpServletResponse.SC_OK);
