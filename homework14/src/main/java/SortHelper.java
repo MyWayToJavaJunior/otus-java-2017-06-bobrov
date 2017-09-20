@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
@@ -10,9 +11,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SortHelper {
 
     public static void quadSort(int[] array) {
-        ForkJoinPool forkJoinPool = new ForkJoinPool(4);
-        forkJoinPool.invoke(new SortTask(array, 4));
+        new SortTask(array, 4).invoke();
     }
+
 
     private static int[] getFirstHalf(int[] source) {
         int[] result = new int[source.length / 2];
@@ -24,6 +25,40 @@ public class SortHelper {
         int[] result = new int[source.length - source.length / 2];
         System.arraycopy(source, source.length / 2, result, 0, source.length - source.length / 2);
         return result;
+    }
+
+    private static void merge(int[] piece1, int[] piece2, int[] target) {
+        int index = 0;
+        int index1 = 0;
+        int index2 = 0;
+
+        while (index < target.length) {
+
+            boolean isBreak = false;
+
+            if (index1 == piece1.length) {
+                System.arraycopy(piece2, index2, target, index, piece2.length - index2);
+                isBreak = true;
+            }
+            if (index2 == piece2.length) {
+                System.arraycopy(piece1, index1, target, index, piece1.length - index1);
+                isBreak = true;
+            }
+
+            if (isBreak) {
+                break;
+            }
+
+            if (piece1[index1] < piece2[index2]) {
+                target[index] = piece1[index1];
+                index1++;
+            } else {
+                target[index] = piece2[index2];
+                index2++;
+            }
+
+            index++;
+        }
     }
 
     private static class SortTask extends RecursiveTask<int[]> {
@@ -61,37 +96,8 @@ public class SortHelper {
                 int[] piece2 = subTask2.join();
                 int[] piece1 = subTask1.join();
 
-                int index = 0;
-                int index1 = 0;
-                int index2 = 0;
+                merge(piece1, piece2, piece);
 
-                while (index < piece.length) {
-
-                    boolean isBreak = false;
-
-                    if (index1 == piece1.length) {
-                        System.arraycopy(piece2, index2, piece, index, piece2.length - index2);
-                        isBreak = true;
-                    }
-                    if (index2 == piece2.length) {
-                        System.arraycopy(piece1, index1, piece, index, piece1.length - index1);
-                        isBreak = true;
-                    }
-
-                    if (isBreak) {
-                        break;
-                    }
-
-                    if (piece1[index1] < piece2[index2]) {
-                        piece[index] = piece1[index1];
-                        index1++;
-                    } else {
-                        piece[index] = piece2[index2];
-                        index2++;
-                    }
-
-                    index++;
-                }
                 return piece;
             }
         }
