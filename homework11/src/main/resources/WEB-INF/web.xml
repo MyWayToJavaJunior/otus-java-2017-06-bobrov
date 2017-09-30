@@ -12,6 +12,7 @@
 
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+        <listener-class>com.lwerl.websocket.WebSocketContextListener</listener-class>
     </listener>
     
     <servlet>
@@ -40,18 +41,5 @@
         <servlet-name>statistic</servlet-name>
         <url-pattern>/stat</url-pattern>
     </servlet-mapping>
-
-    <!--<servlet>
-        <servlet-name>error</servlet-name>
-        <servlet-class>com.lwerl.web.servlet.ErrorServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>error</servlet-name>
-        <url-pattern>/error</url-pattern>
-    </servlet-mapping>
-
-    <error-page>
-        <location>/error</location>
-    </error-page>-->
     
 </web-app>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=UTF-8>
+    <title>WebSocket</title>
+    <script>
+        var ws = new WebSocket("ws://localhost:8030");
+        ws.onopen = function(){
+        };
+        ws.onmessage = function(message){
+            document.getElementById("response").textContent += message.data + "\n";
+        };
+        function postToServer(){
+            ws.send(document.getElementById("id").value);
+            document.getElementById("id").value = "";
+        }
+        function closeConnect(){
+            ws.close();
+        }
+    </script>
+    <style>
+        #response {
+            width: 800px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+<textarea id="response" readonly></textarea><br/>
+<input id="id" type="number" />
+<button type="submit" onClick="postToServer()">Send</button>
+<button onClick="closeConnect()">End</button>
+</body>
+</html>

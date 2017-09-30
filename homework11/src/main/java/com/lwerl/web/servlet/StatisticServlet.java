@@ -50,7 +50,7 @@ public class StatisticServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         initAutowiredBeans();
-        makeAction();
+//        makeAction();
     }
 
     private void initAutowiredBeans() {
