@@ -1,6 +1,7 @@
 package com.lwerl.messagenode.util;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.lwerl.messagenode.model.message.Message;
 
 import java.io.BufferedReader;
@@ -14,7 +15,9 @@ public class MessageHelper {
     private MessageHelper() {
     }
 
-    private static Gson gson = new Gson();
+    private static Gson gson = new GsonBuilder()
+            .registerTypeHierarchyAdapter(Message.class, new MessageGsonTypeAdapter())
+            .create();
 
     public static Message deserializeMessage(BufferedReader reader) throws IOException {
 
@@ -29,8 +32,10 @@ public class MessageHelper {
     }
 
     public static String serializeMessage(Message<?> message){
+
         String result = gson.toJson(message);
         result += "\n\n";
         return result;
+
     }
 }

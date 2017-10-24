@@ -1,8 +1,9 @@
-package com.lwerl.messagenode.model.message;
+package com.lwerl.messagenode.model.message.system;
 
 import com.lwerl.messagenode.MessageSystem;
 import com.lwerl.messagenode.model.Address;
 import com.lwerl.messagenode.model.Addressee;
+import com.lwerl.messagenode.model.message.Message;
 
 /**
  * Created by lWeRl on 22.10.2017.

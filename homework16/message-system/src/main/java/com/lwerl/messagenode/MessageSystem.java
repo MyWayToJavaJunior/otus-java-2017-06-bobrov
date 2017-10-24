@@ -2,7 +2,7 @@ package com.lwerl.messagenode;
 
 import com.lwerl.messagenode.model.Address;
 import com.lwerl.messagenode.model.Addressee;
-import com.lwerl.messagenode.model.message.AddAddresseeRequestMessage;
+import com.lwerl.messagenode.model.message.system.AddAddresseeRequestMessage;
 import com.lwerl.messagenode.model.message.Message;
 import com.lwerl.messagenode.util.MessageHelper;
 import org.slf4j.Logger;
@@ -12,9 +12,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -30,8 +28,10 @@ public class MessageSystem implements Addressee {
     private final Map<Address, ConcurrentLinkedQueue<Message>> messagesMap = new ConcurrentHashMap<>();
     private final Map<Long, Addressee> toAdditionMap = new ConcurrentHashMap<>();
     private final List<Address> localAddresses = new CopyOnWriteArrayList<>();
-    private final ConcurrentLinkedQueue<Message> toHeadMessageQuery = new ConcurrentLinkedQueue<>();
+    private final LinkedBlockingQueue<Message> toHeadMessageQuery = new LinkedBlockingQueue<>();
     private final boolean isRemoteHead;
+
+    private ConcurrentHashMap<Address, String> addressAddresseeClassMap = new ConcurrentHashMap<>();
     private Socket socket;
     private Address address;
     private Address headAddress;
@@ -56,7 +56,7 @@ public class MessageSystem implements Addressee {
         } else if (isRemoteHead) {
             Long waitingId = counter.incrementAndGet();
             toAdditionMap.put(waitingId, addressee);
-            sendMessage(new AddAddresseeRequestMessage(this.getAddress(), this.getHeadAddress(), waitingId));
+            sendMessage(new AddAddresseeRequestMessage(this.getAddress(), this.getHeadAddress(), waitingId, addressee.getClass().getName()));
         } else {
             addressee.setAddress(new Address(counter.incrementAndGet()));
             createWorker(addressee);
@@ -117,13 +117,13 @@ public class MessageSystem implements Addressee {
                     Thread.sleep(MessageSystem.DEFAULT_STEP_TIME);
                 } catch (InterruptedException e) {
                     workerLogger.error("", e);
-                    Thread.currentThread().interrupt();
-                    //break;
+                    break;
                 }
             }
         }).start();
     }
 
+    //TODO make blocking init
     @SuppressWarnings("unchecked")
     private void initWithRemoteHead(String host, int port) {
         try {
@@ -148,7 +148,7 @@ public class MessageSystem implements Addressee {
             while (true) {
                 try {
                     Message message = MessageHelper.deserializeMessage(reader);
-                    if (localAddresses.contains(message.getTo())) {
+                    if (localAddresses.contains(message.getTo()) || message.getTo().equals(getAddress())) {
                         sendMessage(message);
                     }
                 } catch (IOException e) {
@@ -165,14 +165,26 @@ public class MessageSystem implements Addressee {
         new Thread(() -> {
             while (true) {
                 try {
-                    Message message = toHeadMessageQuery.poll();
+                    Message message = toHeadMessageQuery.take();
                     String toReceive = MessageHelper.serializeMessage(message);
                     writer.write(toReceive);
                     writer.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    break;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }).start();
+    }
+
+    public synchronized void setAddressAddresseeClassMap(ConcurrentHashMap<Address, String> addressAddresseeClassMap) {
+        this.addressAddresseeClassMap.clear();
+        this.addressAddresseeClassMap.putAll(addressAddresseeClassMap);
+    }
+
+    public synchronized ConcurrentHashMap<Address, String> getAddressAddresseeClassMap() {
+        return addressAddresseeClassMap;
     }
 }
