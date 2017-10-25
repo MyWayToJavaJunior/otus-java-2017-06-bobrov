@@ -10,7 +10,11 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>message-system</module>
-        <module>front-end</module>
+        <module>message-system-model</module>
+        <module>simple-chat</module>
+        <module>frontend</module>
+        <module>datasets</module>
+        <module>dbservice</module>
     </modules>
 
     <developers>

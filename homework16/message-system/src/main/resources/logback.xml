@@ -16,7 +16,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.lwerl.messagenode.Test" level="ALL"/>
+    <logger name="com.lwerl.start.HeadStarter" level="ALL"/>
 
     <root level="ALL">
         <appender-ref ref="console"/>
